@@ -185,86 +185,93 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div style={{ fontFamily: 'Inter, system-ui, Arial', padding: 24, maxWidth: 960, margin: '0 auto' }}>
-      <h1 style={{ marginBottom: 8 }}>ROI Simulator</h1>
-      <p style={{ marginTop: 0, color: '#555' }}>Enter your monthly figures to see savings, payback, and ROI.</p>
+    <div className="">
+      <div className="mb-3">
+        <h1 className="h2 mb-1">ROI Simulator</h1>
+        <p className="text-secondary mb-0">Enter your monthly figures to see savings, payback, and ROI.</p>
+      </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-        <div>
-          <label>Labor cost (manual)</label>
-          <input inputMode="decimal" placeholder="e.g., 5000" value={inputs.labor_cost_manual} onChange={onNum('labor_cost_manual')} style={{ width: '100%', padding: 10, marginTop: 6 }} />
+      <div className="row g-3">
+        <div className="col-12 col-lg-6">
+          <label className="form-label">Labor cost (manual)</label>
+          <input inputMode="decimal" placeholder="e.g., 5000" value={inputs.labor_cost_manual} onChange={onNum('labor_cost_manual')} className="form-control" />
 
-          <label style={{ marginTop: 12, display: 'block' }}>Error savings</label>
-          <input inputMode="decimal" placeholder="e.g., 1500" value={inputs.error_savings} onChange={onNum('error_savings')} style={{ width: '100%', padding: 10, marginTop: 6 }} />
+          <label className="form-label mt-3">Error savings</label>
+          <input inputMode="decimal" placeholder="e.g., 1500" value={inputs.error_savings} onChange={onNum('error_savings')} className="form-control" />
 
-          <label style={{ marginTop: 12, display: 'block' }}>Automation cost</label>
-          <input inputMode="decimal" placeholder="e.g., 2000" value={inputs.auto_cost} onChange={onNum('auto_cost')} style={{ width: '100%', padding: 10, marginTop: 6 }} />
+          <label className="form-label mt-3">Automation cost</label>
+          <input inputMode="decimal" placeholder="e.g., 2000" value={inputs.auto_cost} onChange={onNum('auto_cost')} className="form-control" />
 
-          <label style={{ marginTop: 12, display: 'block' }}>Implementation cost (one-time)</label>
-          <input inputMode="decimal" placeholder="optional" value={inputs.implementation_cost} onChange={onNum('implementation_cost')} style={{ width: '100%', padding: 10, marginTop: 6 }} />
+          <label className="form-label mt-3">Implementation cost (one-time)</label>
+          <input inputMode="decimal" placeholder="optional" value={inputs.implementation_cost} onChange={onNum('implementation_cost')} className="form-control" />
 
-          <div style={{ marginTop: 16, display: 'flex', gap: 8 }}>
+          <div className="d-flex gap-2 mt-3">
             <input
               type="text"
               placeholder="Scenario name"
               value={scenarioName}
               onChange={(e) => setScenarioName(e.target.value)}
-              style={{ flex: 1, padding: 10 }}
+              className="form-control"
             />
-            <button onClick={saveScenario} disabled={busy} style={{ padding: '10px 14px' }}>Save Scenario</button>
+            <button onClick={saveScenario} disabled={busy} className="btn btn-primary">Save Scenario</button>
           </div>
         </div>
 
-        <div>
-          <div style={{ border: '1px solid #e3e3e3', borderRadius: 8, padding: 16 }}>
-            <h3 style={{ marginTop: 0 }}>Results</h3>
-            {!canSimulate && <p style={{ color: '#777' }}>Enter values to see results.</p>}
-            {error && <p style={{ color: '#b00020' }}>{error}</p>}
-            {results && (
-              <ul>
-                <li><strong>Monthly savings:</strong> ${results.monthly_savings?.toLocaleString()}</li>
-                <li><strong>Payback (months):</strong> {results.payback_months ?? '—'}</li>
-                <li><strong>ROI (%):</strong> {results.roi_percentage ?? '—'}</li>
-                <li style={{ color: '#777' }}><small>Includes boost factor {results.boost_factor}</small></li>
-              </ul>
-            )}
+        <div className="col-12 col-lg-6">
+          <div className="card">
+            <div className="card-body">
+              <h3 className="h5">Results</h3>
+              {!canSimulate && <p className="text-secondary">Enter values to see results.</p>}
+              {error && <p className="text-danger">{error}</p>}
+              {results && (
+                <ul className="mb-0">
+                  <li><strong>Monthly savings:</strong> ${results.monthly_savings?.toLocaleString()}</li>
+                  <li><strong>Payback (months):</strong> {results.payback_months ?? '—'}</li>
+                  <li><strong>ROI (%):</strong> {results.roi_percentage ?? '—'}</li>
+                  <li className="text-secondary"><small>Includes boost factor {results.boost_factor}</small></li>
+                </ul>
+              )}
+            </div>
           </div>
 
-          <div style={{ border: '1px solid #e3e3e3', borderRadius: 8, padding: 16, marginTop: 16 }}>
-            <h3 style={{ marginTop: 0 }}>Saved Scenarios</h3>
-            {scenarios.length === 0 ? (
-              <p style={{ color: '#777' }}>No scenarios yet.</p>
-            ) : (
-              <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
-                {scenarios.map(s => (
-                  <li key={s.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #f0f0f0' }}>
-                    <span>
-                      <strong>{s.scenario_name}</strong>
-                      <span style={{ color: '#777', marginLeft: 8 }}><small>{new Date(s.created_at).toLocaleString()}</small></span>
-                    </span>
-                    <span style={{ display: 'flex', gap: 8 }}>
-                      <button onClick={() => void loadScenario(s.id)} disabled={busy}>Load</button>
-                      <button onClick={() => void deleteScenario(s.id)} disabled={busy}>Delete</button>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
+          <div className="card mt-3">
+            <div className="card-body">
+              <h3 className="h5">Saved Scenarios</h3>
+              {scenarios.length === 0 ? (
+                <p className="text-secondary mb-0">No scenarios yet.</p>
+              ) : (
+                <ul className="list-unstyled mb-0">
+                  {scenarios.map(s => (
+                    <li key={s.id} className="d-flex align-items-center justify-content-between py-2 border-bottom">
+                      <span>
+                        <strong>{s.scenario_name}</strong>
+                        <span className="text-secondary ms-2"><small>{new Date(s.created_at).toLocaleString()}</small></span>
+                      </span>
+                      <span className="d-flex gap-2">
+                        <button onClick={() => void loadScenario(s.id)} disabled={busy} className="btn btn-outline-secondary btn-sm">Load</button>
+                        <button onClick={() => void deleteScenario(s.id)} disabled={busy} className="btn btn-outline-danger btn-sm">Delete</button>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
 
-          <div style={{ border: '1px solid #e3e3e3', borderRadius: 8, padding: 16, marginTop: 16 }}>
-            <h3 style={{ marginTop: 0 }}>Download Full Report</h3>
-            <p style={{ color: '#777', marginTop: 0 }}>Enter a valid email to enable the download.</p>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <input
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                style={{ flex: 1, padding: 10 }}
-              />
-              <button
-                onClick={async () => {
+          <div className="card mt-3">
+            <div className="card-body">
+              <h3 className="h5">Download Full Report</h3>
+              <p className="text-secondary">Enter a valid email to enable the download.</p>
+              <div className="d-flex gap-2">
+                <input
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="form-control"
+                />
+                <button
+                  onClick={async () => {
                   setError(null)
                   const emailOk = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email)
                   if (!emailOk) {
@@ -312,10 +319,11 @@ export const App: React.FC = () => {
                   }
                 }}
                 disabled={busy || !/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email)}
-                style={{ padding: '10px 14px' }}
-              >
-                Download
-              </button>
+                  className="btn btn-success"
+                >
+                  Download
+                </button>
+              </div>
             </div>
           </div>
         </div>
