@@ -76,12 +76,21 @@ A modern web application for calculating and simulating Return on Investment (RO
 2. Sign up on [Vercel](https://vercel.com)
 3. Import your repository and deploy
 
-### Backend (Railway)
-1. Sign up on [Railway](https://railway.app)
-2. Deploy from GitHub repository
-3. Set environment variables:
-   - `FLASK_APP=wsgi:app`
-   - `FLASK_ENV=production`
+### Backend (Render)
+1. Sign up on [Render](https://render.com)
+2. Click "New +" and select "Web Service"
+3. Connect your GitHub repository
+4. Configure your service:
+   - **Name**: roi-simulator-backend (or your preferred name)
+   - **Region**: Choose the one closest to your users
+   - **Branch**: main (or your preferred branch)
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn wsgi:app`
+5. Set environment variables:
+   - `PYTHON_VERSION`: 3.9 (or your preferred version)
+   - `FLASK_APP`: wsgi:app
+   - `FLASK_ENV`: production
+6. Click "Create Web Service"
 
 ## 📊 Features in Detail
 
