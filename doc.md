@@ -90,4 +90,24 @@ All endpoints are implemented in the Flask backend.
 - Log requests and errors on the server for troubleshooting.
 - CORS enabled for the SPA origin during development.
 
+### Getting Started (Run Locally)
+- Backend (Flask):
+  1. `cd backend`
+  2. `./run.ps1`
+  6. Health check: `GET http://127.0.0.1:5000/api/health`
+
+- Frontend (Vite + React):
+  1. Open a new terminal
+  2. `cd frontend`
+  3. `./run.ps1`
+  5. Visit `http://localhost:5173` (proxy forwards `/api` to `http://127.0.0.1:5000`)
+
+Notes:
+- Run the backend before the frontend to avoid proxy errors.
+- For API tests, use the documented endpoints (e.g., `POST /api/simulate`).
+
+### One-command Dev (both servers)
+- From project root: `./dev.ps1`
+- Starts backend (http://127.0.0.1:5000) and frontend (http://localhost:5173) concurrently.
+
 
