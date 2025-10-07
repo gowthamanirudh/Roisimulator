@@ -32,6 +32,7 @@ export const App: React.FC = () => {
   const [scenarioName, setScenarioName] = useState<string>("")
   const [scenarios, setScenarios] = useState<Array<{ id: number; scenario_name: string; created_at: string }>>([])
   const [busy, setBusy] = useState<boolean>(false)
+  const [email, setEmail] = useState<string>("")
 
   const canSimulate = useMemo(() => (
     isValidNumber(inputs.labor_cost_manual) &&
@@ -249,6 +250,73 @@ export const App: React.FC = () => {
                 ))}
               </ul>
             )}
+          </div>
+
+          <div style={{ border: '1px solid #e3e3e3', borderRadius: 8, padding: 16, marginTop: 16 }}>
+            <h3 style={{ marginTop: 0 }}>Download Full Report</h3>
+            <p style={{ color: '#777', marginTop: 0 }}>Enter a valid email to enable the download.</p>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <input
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                style={{ flex: 1, padding: 10 }}
+              />
+              <button
+                onClick={async () => {
+                  setError(null)
+                  const emailOk = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email)
+                  if (!emailOk) {
+                    setError('Enter a valid email to download the report')
+                    return
+                  }
+                  if (!canSimulate) {
+                    setError('Enter required inputs before generating report')
+                    return
+                  }
+                  try {
+                    const body: Record<string, unknown> = {
+                      email,
+                      labor_cost_manual: Number(inputs.labor_cost_manual),
+                      error_savings: Number(inputs.error_savings),
+                      auto_cost: Number(inputs.auto_cost),
+                    }
+                    if (isValidNumber(inputs.implementation_cost)) {
+                      body.implementation_cost = Number(inputs.implementation_cost)
+                    }
+                    const res = await fetch('/api/report/generate', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(body),
+                    })
+                    if (!res.ok) {
+                      const data = await res.json().catch(() => ({}))
+                      throw new Error(data.error || 'Report generation failed')
+                    }
+                    // Try to honor filename from Content-Disposition, fallback
+                    const dispo = res.headers.get('Content-Disposition') || ''
+                    const match = /filename\*=UTF-8''([^;]+)|filename="?([^";]+)"?/i.exec(dispo)
+                    const filename = decodeURIComponent(match?.[1] || match?.[2] || 'roi_report.txt')
+                    const blob = await res.blob()
+                    const url = URL.createObjectURL(blob)
+                    const a = document.createElement('a')
+                    a.href = url
+                    a.download = filename
+                    document.body.appendChild(a)
+                    a.click()
+                    a.remove()
+                    URL.revokeObjectURL(url)
+                  } catch (e: any) {
+                    setError(e.message || 'Report error')
+                  }
+                }}
+                disabled={busy || !/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email)}
+                style={{ padding: '10px 14px' }}
+              >
+                Download
+              </button>
+            </div>
           </div>
         </div>
       </div>
