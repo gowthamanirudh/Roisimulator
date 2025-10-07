@@ -1,8 +1,10 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, send_file
 from sqlalchemy.exc import SQLAlchemyError
 from .roi import SimulationInputs, calculate_simulation
 from .models import Scenario
 from .extensions import db
+import io
+import re
 
 
 api_bp = Blueprint("api", __name__)
@@ -75,5 +77,38 @@ def delete_scenario(scenario_id: int) -> tuple[dict, int]:
     except SQLAlchemyError:
         db.session.rollback()
         return jsonify({"error": "database error"}), 500
+
+
+_EMAIL_REGEX = re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
+
+
+@api_bp.post("/report/generate")
+def generate_report():
+    payload = request.get_json(silent=True) or {}
+    email = (payload.get("email") or "").strip()
+    if not email or not _EMAIL_REGEX.match(email):
+        return jsonify({"error": "valid email is required"}), 400
+
+    try:
+        inputs = SimulationInputs.from_payload(payload)
+        results = calculate_simulation(inputs)
+    except ValueError as err:
+        return jsonify({"error": str(err)}), 400
+
+    # Placeholder file content (stub). A real implementation would render HTML and
+    # convert to PDF (e.g., via WeasyPrint) and stream the PDF bytes.
+    report_text = (
+        "ROI Report (Placeholder)\n\n"
+        f"Email: {email}\n"
+        f"Inputs: {payload}\n"
+        f"Results: {results}\n"
+    )
+    data = io.BytesIO(report_text.encode("utf-8"))
+    return send_file(
+        data,
+        mimetype="text/plain",
+        as_attachment=True,
+        download_name="roi_report_placeholder.txt",
+    )
 
 
